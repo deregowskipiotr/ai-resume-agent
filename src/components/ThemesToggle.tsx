@@ -51,7 +51,7 @@ export function ThemeToggle() {
           className="flex items-center p-2 cursor-pointer"
           aria-label="Toggle theme"
         >
-          <ActiveIcon size={20} />
+          <ActiveIcon size={24} />
           <span className="sr-only">Toggle theme</span>
         </Button>
       </DropdownMenuTrigger>
