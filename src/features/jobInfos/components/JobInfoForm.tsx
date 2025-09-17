@@ -25,8 +25,12 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { experienceLevels } from "@/drizzle/schema";
+import { experienceLevels, JobInfoTable } from "@/drizzle/schema/jobInfo";
 import { formatExperienceLevel } from "../lib/formatters";
+import { LoadingSwap } from "@/components/ui/loading-swap";
+import { createJobInfo, updateJobInfo } from "../actions";
+import { toast } from "sonner";
+
 
 // Experience level enum
 {/*export enum JobExperienceLevel {
@@ -45,16 +49,24 @@ const FormSchema = z.object({
 
 type FormValues = z.infer<typeof FormSchema>;
 
-export function JobInfoForm() {
+export function JobInfoForm({ jobInfo } : {
+  jobInfo?: Pick< 
+    typeof JobInfoTable.$inferSelect,
+    "id" | "name" | "title" | "experienceLevel" | "description"
+  >
+}
+  
+) {
   const [mouted, setMouted] = useState(false);
   useEffect(() => setMouted(true), []);
 
 
   const form = useForm<FormValues>({
+    
     resolver: zodResolver(FormSchema),
-    defaultValues: {
+    defaultValues: jobInfo ?? {
       name: "",
-      jobTitle: "",
+      jobTitle: null,
       experienceLevel: undefined,
       description: "",
     },
@@ -62,9 +74,19 @@ export function JobInfoForm() {
 
   if (!mouted) return null; // Avoid hydration issues
 
+  async function onSubmit(values: FormValues) {
+    //console.log("Form Values:", values);
+    const action = jobInfo ? updateJobInfo.bind(null, jobInfo.id) : createJobInfo;
+    const res = await action(values);
+    
+    if (res?.error) {
+      toast.error(res.message);
+    }
+  }
+
   return (
     <Form {...form}>
-      <form className="space-y-6 w-full">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 w-full">
         <FormField
           control={form.control}
           name="name"
@@ -85,11 +107,14 @@ export function JobInfoForm() {
             name="jobTitle"
             render={({ field }) => (
               <FormItem className="w-full md:w-[75%]">
-                <FormLabel>
-                  Job Title{" "}
-                </FormLabel>
+                <FormLabel>Job Title </FormLabel>
                 <FormControl>
-                  <Input {...field} value={field.value ?? ""} placeholder="e.g. Senior Sowtware Engineer or Full Stack Developer..." />
+                  <Input
+                    {...field}
+                    value={field.value ?? ""}
+                    onChange={(e) => field.onChange(e.target.value || null)}
+                    placeholder="e.g. Senior Sowtware Engineer or Full Stack Developer..."
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -101,10 +126,7 @@ export function JobInfoForm() {
             render={({ field }) => (
               <FormItem className="w-full md:w-[25%]">
                 <FormLabel>Experience Level</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  value={field.value}
-                >
+                <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select level" />
@@ -135,18 +157,26 @@ export function JobInfoForm() {
                   placeholder="Describe the job requirements, responsibilities, and any other relevant details..."
                 />
               </FormControl>
-              <FormMessage className="mt-2"><span>Be as specific as possible. the more information you provide, the better the interviews will be.</span></FormMessage>
+              <FormMessage className="mt-2">
+                <span>
+                  Be as specific as possible. the more information you provide,
+                  the better the interviews will be.
+                </span>
+              </FormMessage>
             </FormItem>
           )}
         />
 
         {/* No action/submit logic as per instruction */}
-        <Button 
+        <Button
           disabled={form.formState.isSubmitting}
-          type="submit" 
-          variant={"default"} 
-          className=" w-full">
-          Create Job Info
+          type="submit"
+          variant={"default"}
+          className=" w-full"
+        >
+          <LoadingSwap isLoading={form.formState.isSubmitting}>
+            Save Job Information
+          </LoadingSwap>
         </Button>
       </form>
     </Form>

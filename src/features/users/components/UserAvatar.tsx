@@ -1,27 +1,27 @@
-
 import { ComponentProps } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { cn } from "@/lib/utils";
 
 type UserAvatarProps = {
-  user: { name: string; imageUrl: string };
+  user: { name?: string; imageUrl?: string };
 } & ComponentProps<typeof Avatar>;
 
-export function UserAvatar({
-  user,
-  ...props
-}: UserAvatarProps) {
-  // Get initials for fallback: take first letter of each word in the name
-  const initials = user.name
+export function UserAvatar({ user, className, ...props }: UserAvatarProps) {
+  const initials = user?.name
     ? user.name
         .split(" ")
-        .map((part) => part[0])
+        .map((n) => n[0])
         .join("")
         .toUpperCase()
     : "U";
 
   return (
-    <Avatar {...props} className="size-9">
-      <AvatarImage src={user.imageUrl} alt={user.name} />
+    <Avatar {...props} className={cn("size-9", className)}>
+      <AvatarImage
+        src={user?.imageUrl || ""}
+        alt={user?.name || "User"}
+        onError={(e) => (e.currentTarget.style.display = "none")}
+      />
       <AvatarFallback>{initials}</AvatarFallback>
     </Avatar>
   );

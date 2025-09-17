@@ -21,6 +21,7 @@ export function Navbar({ user }: { user: { name: string; imageUrl: string } }) {
   const { openUserProfile } = useClerk();
 
   return (
+    //console.log('Navbar user:', user),
     <nav className="h-header border-b-[1px]">
       <div className="container flex h-full items-center justify-between">
         {/* Left: App logo and name */}

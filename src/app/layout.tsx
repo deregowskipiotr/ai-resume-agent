@@ -3,6 +3,7 @@ import {  Commissioner } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@/services/clerk/components/ClerkProvider";
 import { ThemeProvider } from "next-themes";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Commissioner({
   variable: "--font-sans",
@@ -32,7 +33,10 @@ export default function RootLayout({
             defaultTheme="system"
             enableColorScheme
             disableTransitionOnChange
-          >{children}</ThemeProvider>
+          >
+            {children}
+            <Toaster />
+          </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>

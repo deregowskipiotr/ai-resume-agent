@@ -1,12 +1,16 @@
-import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { db } from "@/drizzle/db";
 import { JobInfoTable } from "@/drizzle/schema";
 import { JobInfoForm } from "@/features/jobInfos/components/JobInfoForm";
 import { getJobInfoUserTag } from "@/features/jobInfos/dbCache";
+import { formatExperienceLevel } from "@/features/jobInfos/lib/formatters";
 import { getCurrentUser } from "@/services/clerk/lib/getCurrentUser";
 import { desc, eq } from "drizzle-orm";
-import { Loader2Icon } from "lucide-react";
+import { ArrowRightIcon, Loader2Icon, PlusIcon } from "lucide-react";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
+import Link from "next/link";
 import { Suspense } from "react";
 
 export default function AppPage() {
@@ -33,7 +37,63 @@ async function JobInfos() {
     return <NoJobsInfos />
   }
 
-  return null;
+  return (
+    <div className="container my-4 md:mt-12">
+      <div className="flex gap-2 justify-between items-center mb-8">
+        <h1 className="text-3xl md:text-4xl lg:text-5xl text-primary/80">
+          Select a job description
+        </h1>
+        <Button asChild>
+          <Link href="/app/job-infos/new">
+            <PlusIcon />
+            Create Job Description
+          </Link>
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {jobInfos.map((jobInfo) => (
+          <Link
+            href={`/app/job-infos/${jobInfo.id}`}
+            key={jobInfo.id}
+            className="no-underline"
+          >
+            <Card className="h-full border hover:bg-transparent transition-colors duration-300">
+              <div className="flex items-center justify-between h-full">
+                <div className="space-y-4 h-full">
+                  <CardHeader>
+                    <CardTitle className="text-lg">{jobInfo.name}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="line-clamp-3 text-muted-foreground">
+                    {jobInfo.description}
+                  </CardContent>
+                  <CardFooter className="flex gap-2">
+                    <Badge variant="outline">
+                      {formatExperienceLevel(jobInfo.experienceLevel)}
+                    </Badge>
+                    {jobInfo.title && (
+                      <Badge variant="outline">{jobInfo.title}</Badge>
+                    )}
+                  </CardFooter>
+                </div>
+                <CardContent>
+                  <ArrowRightIcon className="size-6" />
+                </CardContent>
+              </div>
+            </Card>
+          </Link>
+        ))}
+        <Link href="/app/job-infos/new" className="no-underline">
+          <Card className="h-full flex items-center justify-center border-dashed border-2 bg-transparent hover:border-primary transition-colors duration-300">
+            <div className="text-lg flex items-center gap-2 text-white/90">
+              <PlusIcon className="size-6" />
+              New Job Description
+            </div>
+          </Card>
+        </Link>
+      </div>
+    </div>
+  );
 }
 
 function NoJobsInfos() {
