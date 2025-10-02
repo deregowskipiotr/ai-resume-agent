@@ -11,14 +11,24 @@ export async function getCurrentUser({ allData = false } = {}) {
   return {
     userId,
     redirectToSignIn,
-    user: allData && userId != null ? await getUser(userId) : undefined
+    user: allData && userId != null ? await getUser(userId) : undefined,
+  };
+}
+
+async function getUser(id: string) {
+  "use cache";
+  cacheTag(getUserIdTag(id));
+
+  try {
+    console.log(`Fetching user with ID: ${id}`);
+    const user = await db.query.UserTable.findFirst({
+      where: eq(UserTable.id, id),
+    });
+    console.log(`User found:`, user);
+    return user;
+  } catch (error) {
+    console.error(`Error fetching user with ID ${id}:`, error);
+    return undefined;
   }
 }
-async function getUser(id: string) {
-  "use cache"
-  cacheTag(getUserIdTag(id))
 
-  return db.query.UserTable.findFirst({
-    where: eq(UserTable.id, id),
-  })
-}

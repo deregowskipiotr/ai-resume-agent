@@ -7,6 +7,7 @@ type UserAvatarProps = {
 } & ComponentProps<typeof Avatar>;
 
 export function UserAvatar({ user, className, ...props }: UserAvatarProps) {
+  console.log("user avatar", user)
   const initials = user?.name
     ? user.name
         .split(" ")

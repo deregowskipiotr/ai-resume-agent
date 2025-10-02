@@ -5,15 +5,19 @@ import { Navbar } from "./_Navbar";
 
 
 export default async function AppLayout({children}: {children: ReactNode}) {
-  const { userId, user } = await getCurrentUser({ allData: true })
+  const { userId, user } = await getCurrentUser({ allData: true });
 
-  if (userId == null) return redirect("/")
-  if (user == null) return redirect("/onboarding")
+  // Add logging here for debugging
+  console.log("AppLayout - userId:", userId);
+  console.log("AppLayout - user record:", user);
 
-    return (
-      <>
-      <Navbar user={user}/>
+  if (userId == null) return redirect("/");
+  if (user == null) return redirect("/onboarding");
+
+  return (
+    <>
+      <Navbar user={user} />
       {children}
-      </>
-    )
+    </>
+  );
 }

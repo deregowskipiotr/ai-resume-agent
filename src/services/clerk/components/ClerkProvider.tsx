@@ -1,5 +1,6 @@
 import { ReactNode } from 'react'; 
 import { ClerkProvider as OriginalClerkProvider } from '@clerk/nextjs';
+import { buttonVariants } from '@/components/ui/button';
 
 export function ClerkProvider({ children }: { children: ReactNode }) {
 	return (
@@ -26,6 +27,16 @@ export function ClerkProvider({ children }: { children: ReactNode }) {
           fontFamily: "var(--font-sans)",
           fontFamilyButtons: "var(--font-sans)",
         },
+        elements: {
+          pricingTableCard:
+          "custom-pricing-table bg-none bg-[unset] border border-border p-6 my-3",
+          pricingTableCardHeader: "p-0 pb-12",
+          pricingTableCardFreeTitle: "text-xl",
+          pricingTableCardBody: "flex flex-col justify-end bg-none bg-[unset]",
+          pricingTableCardDescription: "text-sm text-muted-foreground mb-2",
+          pricingTableCardFooter: "border-none p-0 pt-8",
+          pricingTableCardFooterButton: buttonVariants(),
+        }
       }}
     >
       {children}
